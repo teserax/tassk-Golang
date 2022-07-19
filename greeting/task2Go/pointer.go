@@ -13,12 +13,13 @@ type Child struct {
 }
 
 func CopyParent(p *Parent) Parent {
-	copy := *p
+	*p = Parent{}
 
-	return copy
+	return *p
 }
-
 func main() {
+
+	// cp := CopyParent(nil) // Parent{}
 
 	p := &Parent{
 		Name: "Harry",
@@ -27,14 +28,9 @@ func main() {
 				Name: "Andy",
 				Age:  18,
 			},
-			{
-				Name: "Vasya",
-				Age:  22,
-			},
 		},
 	}
 	cp := CopyParent(p)
-	cp.Children[0] = Child{}
-	fmt.Println(&cp)
-	fmt.Println(&p)
+
+	fmt.Printf(cp)
 }

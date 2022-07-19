@@ -1,1 +1,3 @@
-Remove([]int{1, 2, 3}, 5)
+for i, val := range m {
+		userIDs[i] = val
+	}

@@ -10,6 +10,23 @@
   Предусмотреть обработку неправильного номера или варианта.*/
 package main
 
+import (
+	"fmt"
+	"os"
+)
+
 func main() {
+
+	postcards := []string{"Новогодние", "С Днем Рождения", "С Днем Защитника Отечества"}
+	var theme, banknote int
+	var themeOption string
+	fmt.Println("Enter the number of theme")
+	fmt.Fscan(os.Stdin, &theme)
+	fmt.Println("Enter a theme option")
+	fmt.Fscan(os.Stdin, &themeOption)
+	fmt.Println("Enter the denomination of the banknote")
+	fmt.Fscan(os.Stdin, &banknote)
+	fmt.Printf("You have chosen a postcard %d with an option %s and paid %d", theme, themeOption, banknote)
+	fmt.Println(postcards)
 
 }

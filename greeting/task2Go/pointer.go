@@ -32,5 +32,5 @@ func main() {
 	}
 	cp := CopyParent(p)
 
-	fmt.Printf(cp)
+	fmt.Printf("%v", cp)
 }

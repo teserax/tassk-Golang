@@ -1,1 +1,6 @@
-fmt.Println(<-c)
+if CLOSEA {
+			close(out)
+			return
+		}
+		out <- random(min, max)
+	

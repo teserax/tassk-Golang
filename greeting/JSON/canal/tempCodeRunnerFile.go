@@ -1,6 +1,8 @@
-if CLOSEA {
-			close(out)
-			return
+	count := 0
+	for _, char := range str {
+		if unicode.IsDigit(char) {
+			count++
 		}
-		out <- random(min, max)
-	
+	}
+	return count
+}

@@ -1,1 +1,1 @@
-<-time.NewTicker(time.Duration(10) * time.Millisecond).C // время ожидания завершения работы горутин
+return

@@ -5,35 +5,41 @@ package main
 
 import (
 	"fmt"
-	"sync"
+	"strings"
 	"unicode"
 )
 
-var wg sync.WaitGroup
+// var wg sync.WaitGroup
 
 func findInt(str string) {
+	words := strings.Fields(str)
 	count := 0
-	for _, val := range str {
-		if unicode.IsDigit(rune(val)) {
-			count++
-		}
+
+	for _, word := range words {
+		go func() {
+			// wg.Add(1)
+			for _, num := range word {
+				if unicode.IsDigit(num) {
+
+					fmt.Println(string(num))
+					count++
+				}
+
+			}
+			// wg.Done()
+		}()
 
 	}
-	fmt.Printf("number of integer in text is %d\n", count)
-	wg.Done()
+
+	fmt.Printf("number of integer in text %d\n", count)
+
 }
 
 func main() {
 
-	str := "1 a2  4 b c 5 ,wwewe   werwrwr wrwrwerwer"
-	str2 := "stop 2 and look 3 jn 4 moon"
-	str3 := "афые 2 ар6кlook 3 ууке 4 moo7n"
-	wg.Add(1)
-	go findInt(str)
-	wg.Add(1)
-	go findInt(str2)
-	wg.Add(1)
-	go findInt(str3)
-	wg.Wait()
+	str := "1 a2a  4 b c 5 ,ww77ewe   werwrwr wrwrwerwer"
+
+	findInt(str)
+	// wg.Wait()
 
 }

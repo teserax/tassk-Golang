@@ -1,1 +1,1 @@
-	// wg.Wait()
+wg.Wait()

@@ -1,1 +1,1 @@
-wg.Wait()
+defer close(out)

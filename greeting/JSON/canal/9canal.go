@@ -9,6 +9,34 @@
 
 package main
 
-func main() {
+import (
+	"fmt"
+	"math/rand"
+	"sync"
+	"time"
+)
 
+var wg sync.WaitGroup
+
+// - первый этап: N1 количество горутин генерируют случайные числа с интервалом N2 секунд
+//    в каком то диапазоне [a,b] и отправляет в канал 1
+func numberGeneration(interval int) <-chan int {
+	out := make(chan int)
+	wg.Add(1)
+	go func() {
+		time.Sleep(time.Duration(interval))
+		num := rand.Intn(10) + 1
+		out <- num
+		wg.Done()
+		defer close(out)
+	}()
+
+	return out
+}
+func main() {
+	rand.Seed(time.Now().UnixNano())
+
+	result := numberGeneration(1)
+	fmt.Print(<-result)
+	wg.Wait()
 }

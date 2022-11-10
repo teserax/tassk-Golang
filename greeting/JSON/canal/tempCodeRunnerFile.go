@@ -1,1 +1,1 @@
-return out
+var wg sync.WaitGroup

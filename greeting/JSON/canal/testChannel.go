@@ -1,7 +1,8 @@
 // - первый этап: N1 количество горутин генерируют случайные числа с интервалом N2 секунд
 //    в каком то диапазоне [a,b] и отправляет в канал 1
 // - второй этап: M1 гороутин берут эти числа из канала 1
-//    и делают какую то обработку их, например находят все делители этих чисел и отправляют json структуру (число и его делители) в канал 2
+//    и делают какую то обработку их, например находят все делители этих чисел
+//    и отправляют json структуру (число и его делители) в канал 2
 // - третий этап: K1 гороутин получают json и выделяют
 //    максимальное число переданной на 1вом этапе.
 //--программа заканчивает работу после В секунд или если сгеренируется на первом этапе максимальное число с интервала --
@@ -17,38 +18,54 @@ import (
 
 var wg sync.WaitGroup
 
-//-Получить ответ отом что найдено число 10 и закрыть канал, сообщить!!
-func randomNumberGeneration(numberOfGourutin, interval int) <-chan int {
-	out := make(chan int, 1)
+type divisorValue struct {
+	value   int
+	divisor []int
+}
+
+var ch = make(chan int)
+
+func randomNumberGeneration(numberOfGourutin, interval int) {
+	out := make(chan int)
+	result := map[int][]int{}
 	for i := 0; i < numberOfGourutin; i++ {
-		wg.Add(1)
 		go func() {
 			time.Sleep(time.Duration(interval))
 			num := rand.Intn(10) + 1
-			fmt.Println(num)
 			out <- num
-			wg.Done()
+
 		}()
 
 		select {
+		case _, ok := <-out:
+			if !ok {
+				fmt.Println("канал закрыт ")
+				return
+			}
 		case n := <-out:
-			if n == 10 {
-				fmt.Println("Найдено число десять закрываю канал")
-				close(out)
-				return out
+
+			for i := 1; i < 6; i++ {
+				result[n] = append(result[n])
+				if n%i == 0 {
+
+					if _, exist := result[n]; exist {
+						result[n] = append(result[n], i)
+					}
+
+				}
+
 			}
 
 		}
 
 	}
-	return out
+	fmt.Println(result)
+	defer close(out)
+	return
 }
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
-	result := randomNumberGeneration(10, 1)
-	result = result
-
-	wg.Wait()
+	randomNumberGeneration(7, 1)
 
 }

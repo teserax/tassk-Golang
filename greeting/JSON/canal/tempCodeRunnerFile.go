@@ -1,1 +1,1 @@
-}
+defer close(out)

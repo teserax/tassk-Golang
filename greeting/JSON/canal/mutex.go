@@ -29,21 +29,22 @@ func gen(goroutineNumbers int, startNum int, EndNum int) <-chan int {
 
 			// check number with max value
 			if genNumber == EndNum {
-				out <- genNumber
+
 				fmt.Println("tut")
 				// set exitEvent
 				exitEventVar.mutex.Lock() // this not block reading
-				exitEventVar.exit = true  // write event to exit
-				exitEventVar.mutex.Unlock()
-				return
-			}
-			if exitEventVar.exit {
-				fmt.Println("Exit")
-				return
+
+				exitEventVar.exit = true // write event to exit
+				if exitEventVar.exit {
+					fmt.Println("Exit")
+					return
+				}
+
 			}
 
 			// return number
 			out <- genNumber
+			exitEventVar.mutex.Unlock()
 		}()
 	}
 	go func() {

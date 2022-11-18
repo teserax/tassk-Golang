@@ -16,56 +16,45 @@ import (
 	"time"
 )
 
-var wg sync.WaitGroup
-
-type divisorValue struct {
-	value   int
-	divisor []int
+type exitEvent struct {
+	exit  bool
+	mutex sync.RWMutex
 }
 
-var ch = make(chan int)
+var (
+	exitEventVar exitEvent
+)
 
-func randomNumberGeneration(numberOfGourutin, interval int) {
-	out := make(chan int)
-	result := map[int][]int{}
-	for i := 0; i < numberOfGourutin; i++ {
-		go func() {
-			time.Sleep(time.Duration(interval))
-			num := rand.Intn(10) + 1
-			out <- num
-
-		}()
-
-		select {
-		case _, ok := <-out:
-			if !ok {
-				fmt.Println("канал закрыт ")
-				return
-			}
-		case n := <-out:
-
-			for i := 1; i < 6; i++ {
-				result[n] = append(result[n])
-				if n%i == 0 {
-
-					if _, exist := result[n]; exist {
-						result[n] = append(result[n], i)
-					}
-
-				}
-
-			}
-
-		}
-
-	}
-	fmt.Println(result)
-	defer close(out)
-	return
+func randNum(min, max int) int {
+	return rand.Intn(max-min) + min
 }
 func main() {
+	var wg sync.WaitGroup
 	rand.Seed(time.Now().UnixNano())
+	col := [10]struct{}{}
+	ch := make(chan int)
+	for range col {
+		wg.Add(1)
+		go func() {
+			result := randNum(1, 9)
+			wg.Done()
+			if result == 7 {
+				exitEventVar.exit = false
+				fmt.Println("asia nara")
+				return
+			} else {
+				ch <- result
+				fmt.Println(result)
+			}
+			go func() {
+				defer close(ch)
+				defer wg.Wait()
+			}()
+		}()
 
-	randomNumberGeneration(7, 1)
+	}
+	for v := range ch {
+		fmt.Println(v)
+	}
 
 }

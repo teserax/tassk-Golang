@@ -41,23 +41,23 @@ type FullName struct {
 }
 
 func main() {
-	file, err := os.Create("card-index.txt")
-	if err != nil {
+	file, err := os.Create("card-index.txt")//создаем фаил
+	if err != nil {                         //проверяем на ошибки
 		log.Fatal("Error make file")
 		os.Exit(1)
 	}
-	defer file.Close()
+	defer file.Close()//закрываем фаил
 
-	infoOfPacient := map[int]Patient{}
-	start := true
+	infoOfPacient := map[int]Patient{}//храниь инфу будем в мапе структур
+	start := true                 
 	inc := 0
-	for start {
+	for start {                 //пременная ..старт.. если верно то продолжаем цикл
 
-		var cardNumber, Age int
-		var blood, diagnosis string
-		var FirstName, LastName, Patronymic string
+		var cardNumber, Age int         //переменные запроса на заполнение инфо пациента
+		var blood, diagnosis string      //переменные запроса на заполнение инфо пациента
+		var FirstName, LastName, Patronymic string    //переменные запроса на заполнение инфо пациента
 
-		fmt.Println("Enter cardNumber of Pacient ")
+		fmt.Println("Enter cardNumber of Pacient ")//  запрос на заполнение 
 		fmt.Scan(&cardNumber)
 		fmt.Println("Enter FirstName of Pacient ")
 		fmt.Scan(&FirstName)
@@ -72,7 +72,7 @@ func main() {
 		fmt.Println("Enter diagnosis of Pacient ")
 		fmt.Scan(&diagnosis)
 
-		inc++
+		inc++                 //инкрементируем тем самым задаем колличество записанных анкет
 		infoOfPacient[inc] = Patient{
 			CardNumber: cardNumber,
 			Age:        Age,
@@ -86,20 +86,20 @@ func main() {
 		}
 
 		data := []byte{}
-		data, _ = json.MarshalIndent(infoOfPacient[inc], " ", "")
-		file.Write(data)
+		data, _ = json.MarshalIndent(infoOfPacient[inc], " ", "")// орабатываем данные ввиде JSON фаила..функцией MarshalIndent для лучшей читабельности
+		file.Write(data)//запись в фаил
 		var answer string
-		fmt.Println("Enter New Pacient ? y/n ")
+		fmt.Println("Enter New Pacient ? y/n ")//запрос на добавление новой анкеты
 		fmt.Scan(&answer)
 		if answer != "y" {
 			start = false
 		}
 	}
-	info, err := os.ReadFile("card-index.txt")
+	info, err := os.ReadFile("card-index.txt")//читаем файл
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	fmt.Println(string(info))
+	fmt.Println(string(info)) выводим полученную инфу 
 
-}
+}            

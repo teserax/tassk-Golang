@@ -6,10 +6,10 @@
 ////2.1. Создает файл с вышеуказанной структурой, информация..............."+"
 ////о пациенте считывается с клавиатуры.............."+"
 //2.2. Выводит содержимое файла на экран................."+"
-//2.3. Определяет количество пациентов:
-//до 40 лет;
-//от 41 до 60 лет;
-//более 60 лет.
+//2.3. Определяет количество пациентов:,,,,,,,,,,,,,,,"+"
+//до 40 лет;........................."+"
+//от 41 до 60 лет;..............."+"
+//более 60 лет.............."+"
 //2.4. Определяет количество пациентов с гипертонической
 //болезнью и возрастом менее 50 лет.
 //2.5. Определяет количество пациентов с артритом и группой
@@ -32,7 +32,7 @@ type Patient struct {
 	Age        int
 	BloodType  string
 	Diagnosis  string
-	FullName   `json:"FullName"`
+	FullName
 }
 type FullName struct {
 	FirstName  string
@@ -41,65 +41,79 @@ type FullName struct {
 }
 
 func main() {
-	file, err := os.Create("card-index.txt")//создаем фаил
-	if err != nil {                         //проверяем на ошибки
-		log.Fatal("Error make file")
+	file, err := os.Create("card-index.txt")
+	if err != nil {
+		log.Fatal(err)
 		os.Exit(1)
 	}
-	defer file.Close()//закрываем фаил
+	defer file.Close()
 
-	infoOfPacient := map[int]Patient{}//храниь инфу будем в мапе структур
-	start := true                 
+	infoOfPacient := map[int]Patient{}
+	start := true
 	inc := 0
-	for start {                 //пременная ..старт.. если верно то продолжаем цикл
+	data := []byte{}
 
-		var cardNumber, Age int         //переменные запроса на заполнение инфо пациента
-		var blood, diagnosis string      //переменные запроса на заполнение инфо пациента
-		var FirstName, LastName, Patronymic string    //переменные запроса на заполнение инфо пациента
+	for start {
 
-		fmt.Println("Enter cardNumber of Pacient ")//  запрос на заполнение 
-		fmt.Scan(&cardNumber)
+		hospitalQuestionnaire := Patient{}
+		fmt.Println("Enter cardNumber of Pacient ")
+		fmt.Scan(&hospitalQuestionnaire.CardNumber)
 		fmt.Println("Enter FirstName of Pacient ")
-		fmt.Scan(&FirstName)
+		fmt.Scan(&hospitalQuestionnaire.FirstName)
 		fmt.Println("Enter LastName of Pacient ")
-		fmt.Scan(&LastName)
+		fmt.Scan(&hospitalQuestionnaire.LastName)
 		fmt.Println("Enter Patronymic of Pacient ")
-		fmt.Scan(&Patronymic)
+		fmt.Scan(&hospitalQuestionnaire.Patronymic)
 		fmt.Println("Enter Age of Pacient ")
-		fmt.Scan(&Age)
+		fmt.Scan(&hospitalQuestionnaire.Age)
 		fmt.Println("Enter blood of Pacient ")
-		fmt.Scan(&blood)
+		fmt.Scan(&hospitalQuestionnaire.BloodType)
 		fmt.Println("Enter diagnosis of Pacient ")
-		fmt.Scan(&diagnosis)
+		fmt.Scan(&hospitalQuestionnaire.Diagnosis)
 
-		inc++                 //инкрементируем тем самым задаем колличество записанных анкет
-		infoOfPacient[inc] = Patient{
-			CardNumber: cardNumber,
-			Age:        Age,
-			BloodType:  blood,
-			Diagnosis:  diagnosis,
-			FullName: FullName{
-				FirstName:  FirstName,
-				LastName:   LastName,
-				Patronymic: Patronymic,
-			},
-		}
-
-		data := []byte{}
-		data, _ = json.MarshalIndent(infoOfPacient[inc], " ", "")// орабатываем данные ввиде JSON фаила..функцией MarshalIndent для лучшей читабельности
-		file.Write(data)//запись в фаил
+		inc++
+		infoOfPacient[inc] = hospitalQuestionnaire
 		var answer string
-		fmt.Println("Enter New Pacient ? y/n ")//запрос на добавление новой анкеты
+
+		data, err = json.MarshalIndent(infoOfPacient[inc], " ", "")
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println("Enter New Pacient ? y/n ")
 		fmt.Scan(&answer)
 		if answer != "y" {
 			start = false
 		}
 	}
-	info, err := os.ReadFile("card-index.txt")//читаем файл
+	file.Write(data)
+	info, err := os.ReadFile("card-index.txt")
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
-	fmt.Println(string(info)) выводим полученную инфу 
+	fmt.Println(string(info))
+	var fortyYearOlds, fortyToSixty, overSixty int
+	for _, v := range infoOfPacient {
+		if v.Age <= 40 {
+			fortyYearOlds++
 
-}            
+		}
+		if v.Age > 40 || v.Age <= 60 {
+			fortyToSixty++
+		}
+		if v.Age > 60 {
+			overSixty++
+		}
+	}
+	fmt.Printf("Number patients under 40 years of age %d \nNumber patients under 40 years of age %d \nNumber patients under 40 years of age %d", fortyYearOlds, fortyToSixty, overSixty)
+
+}
+func searchAge(m map[int]Patient) {
+	col := 0
+	for _, v := range m {
+		if v.Age <= 40 {
+			col++
+
+		}
+	}
+	fmt.Printf("Number patients under 40 years of age ", col)
+}

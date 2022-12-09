@@ -54,7 +54,7 @@ func (list List) Filter(option Options) List {
 			result = append(result, pacient)
 		}
 		if option.Group == pacient.BloodType {
-
+			result = append(result, pacient)
 		}
 	}
 	return result
@@ -110,7 +110,7 @@ func main() {
 		os.Exit(2)
 	}
 	fmt.Println(string(info))
-	infoResult := ListOfPacient.Filter(Options{MinAge: 40}).Filter(Options{Diagnos: "test"})
+	infoResult := ListOfPacient.Filter(Options{MinAge: 40}).Filter(Options{Group: "AO"})
 
 	fmt.Println(infoResult)
 }

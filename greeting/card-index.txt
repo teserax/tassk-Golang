@@ -1,11 +1,20 @@
-{
- "CardNumber": 1223,
- "Age": 23,
+[
+ {
+ "CardNumber": 1,
+ "Age": 34,
  "BloodType": "AO",
- "Diagnosis": "Turif",
- "FullName": {
- "FirstName": "Petrov",
- "LastName": "Serghei",
- "Patronymic": "Ivanovich"
+ "Diagnosis": "ww",
+ "FirstName": "2",
+ "LastName": "3",
+ "Patronymic": "3"
+ },
+ {
+ "CardNumber": 2,
+ "Age": 33,
+ "BloodType": "AO",
+ "Diagnosis": "qwewqr",
+ "FirstName": "2",
+ "LastName": "2",
+ "Patronymic": "2"
  }
- }
+ ]

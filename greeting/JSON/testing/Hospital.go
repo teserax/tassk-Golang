@@ -39,6 +39,26 @@ type FullName struct {
 	LastName   string
 	Patronymic string
 }
+type List []Patient
+type Options struct {
+	MinAge  int
+	MaxAge  int
+	Group   string
+	Diagnos string
+}
+
+func (list List) Filter(option Options) List {
+	var result List
+	for _, pacient := range list {
+		if option.MinAge > pacient.Age {
+			result = append(result, pacient)
+		}
+		if option.Group == pacient.BloodType {
+
+		}
+	}
+	return result
+}
 
 func main() {
 	file, err := os.Create("card-index.txt")
@@ -48,9 +68,8 @@ func main() {
 	}
 	defer file.Close()
 
-	infoOfPacient := map[int]Patient{}
+	ListOfPacient := List{}
 	start := true
-	inc := 0
 	data := []byte{}
 
 	for start {
@@ -71,11 +90,10 @@ func main() {
 		fmt.Println("Enter diagnosis of Pacient ")
 		fmt.Scan(&hospitalQuestionnaire.Diagnosis)
 
-		inc++
-		infoOfPacient[inc] = hospitalQuestionnaire
+		ListOfPacient = append(ListOfPacient, hospitalQuestionnaire)
 		var answer string
 
-		data, err = json.MarshalIndent(infoOfPacient[inc], " ", "")
+		data, err = json.MarshalIndent(ListOfPacient, " ", "")
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -89,31 +107,10 @@ func main() {
 	info, err := os.ReadFile("card-index.txt")
 	if err != nil {
 		log.Fatal(err)
+		os.Exit(2)
 	}
 	fmt.Println(string(info))
-	var fortyYearOlds, fortyToSixty, overSixty int
-	for _, v := range infoOfPacient {
-		if v.Age <= 40 {
-			fortyYearOlds++
+	infoResult := ListOfPacient.Filter(Options{MinAge: 40}).Filter(Options{Diagnos: "test"})
 
-		}
-		if v.Age > 40 || v.Age <= 60 {
-			fortyToSixty++
-		}
-		if v.Age > 60 {
-			overSixty++
-		}
-	}
-	fmt.Printf("Number patients under 40 years of age %d \nNumber patients under 40 years of age %d \nNumber patients under 40 years of age %d", fortyYearOlds, fortyToSixty, overSixty)
-
-}
-func searchAge(m map[int]Patient) {
-	col := 0
-	for _, v := range m {
-		if v.Age <= 40 {
-			col++
-
-		}
-	}
-	fmt.Printf("Number patients under 40 years of age ", col)
+	fmt.Println(infoResult)
 }

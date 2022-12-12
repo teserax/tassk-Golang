@@ -47,16 +47,24 @@ type Options struct {
 	Diagnos string
 }
 
-func (list List) Filter(option Options) List {
+func (list List) FilterAges(option Options) List {
 	var result List
 	for _, pacient := range list {
-		if option.MinAge > pacient.Age {
+		if option.MinAge <= pacient.Age && option.MaxAge >= pacient.Age {
 			result = append(result, pacient)
 		}
-		if option.Group == pacient.BloodType {
+
+	}
+	return result
+}
+func (list List) FilterDiagnosis(option Options) List {
+	var result List
+	for _, pacient := range list {
+		if option.MinAge <= pacient.Age && option.MaxAge >= pacient.Age && option.Diagnos == pacient.Diagnosis {
 			result = append(result, pacient)
 		}
 	}
+
 	return result
 }
 
@@ -69,40 +77,47 @@ func main() {
 	defer file.Close()
 
 	ListOfPacient := List{}
-	start := true
+	//start := true
 	data := []byte{}
 
-	for start {
+	//for start {
 
-		hospitalQuestionnaire := Patient{}
-		fmt.Println("Enter cardNumber of Pacient ")
-		fmt.Scan(&hospitalQuestionnaire.CardNumber)
-		fmt.Println("Enter FirstName of Pacient ")
-		fmt.Scan(&hospitalQuestionnaire.FirstName)
-		fmt.Println("Enter LastName of Pacient ")
-		fmt.Scan(&hospitalQuestionnaire.LastName)
-		fmt.Println("Enter Patronymic of Pacient ")
-		fmt.Scan(&hospitalQuestionnaire.Patronymic)
-		fmt.Println("Enter Age of Pacient ")
-		fmt.Scan(&hospitalQuestionnaire.Age)
-		fmt.Println("Enter blood of Pacient ")
-		fmt.Scan(&hospitalQuestionnaire.BloodType)
-		fmt.Println("Enter diagnosis of Pacient ")
-		fmt.Scan(&hospitalQuestionnaire.Diagnosis)
-
-		ListOfPacient = append(ListOfPacient, hospitalQuestionnaire)
-		var answer string
-
-		data, err = json.MarshalIndent(ListOfPacient, " ", "")
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println("Enter New Pacient ? y/n ")
-		fmt.Scan(&answer)
-		if answer != "y" {
-			start = false
-		}
+	//hospitalQuestionnaire := Patient{}
+	//fmt.Println("Enter cardNumber of Pacient ")
+	//fmt.Scan(&hospitalQuestionnaire.CardNumber)
+	//fmt.Println("Enter FirstName of Pacient ")
+	//fmt.Scan(&hospitalQuestionnaire.FirstName)
+	//fmt.Println("Enter LastName of Pacient ")
+	//fmt.Scan(&hospitalQuestionnaire.LastName)
+	//fmt.Println("Enter Patronymic of Pacient ")
+	//fmt.Scan(&hospitalQuestionnaire.Patronymic)
+	//fmt.Println("Enter Age of Pacient ")
+	//fmt.Scan(&hospitalQuestionnaire.Age)
+	//fmt.Println("Enter blood of Pacient ")
+	//fmt.Scan(&hospitalQuestionnaire.BloodType)
+	//fmt.Println("Enter diagnosis of Pacient ")
+	//fmt.Scan(&hospitalQuestionnaire.Diagnosis)
+	//
+	//ListOfPacient = append(ListOfPacient, hospitalQuestionnaire)
+	//
+	ListOfPacient = []Patient{
+		{1, 34, "OO", "non", FullName{FirstName: "Petrov", LastName: "Serghei", Patronymic: "qww"}},
+		{2, 42, "qq", "test", FullName{FirstName: "Ivanov", LastName: "Andrei", Patronymic: "qggg"}},
+		{3, 56, "ee", "top", FullName{FirstName: "Sidorov", LastName: "Petar", Patronymic: "qhhh"}},
+		{4, 67, "rr", "retr", FullName{FirstName: "Kozlov", LastName: "Ivan", Patronymic: "qkkk"}},
 	}
+
+	data, err = json.MarshalIndent(ListOfPacient, " ", "")
+	if err != nil {
+		log.Fatal(err)
+	}
+	//	var answer string
+	//	fmt.Println("Enter New Pacient ? y/n ")
+	//	fmt.Scan(&answer)
+	//	if answer != "y" {
+	//		start = false
+	//	}
+	//}
 	file.Write(data)
 	info, err := os.ReadFile("card-index.txt")
 	if err != nil {
@@ -110,7 +125,12 @@ func main() {
 		os.Exit(2)
 	}
 	fmt.Println(string(info))
-	infoResult := ListOfPacient.Filter(Options{MinAge: 40}).Filter(Options{Group: "AO"})
-
-	fmt.Println(infoResult)
+	infoResult := ListOfPacient.FilterAges(Options{MaxAge: 40})
+	fmt.Printf("patients up to 40 years of age: %v\n", infoResult)
+	infoResult = ListOfPacient.FilterAges(Options{MinAge: 41, MaxAge: 60})
+	fmt.Printf("patients from 41 up to 60 years of age: %v\n", infoResult)
+	infoResult = ListOfPacient.FilterAges(Options{MinAge: 60, MaxAge: 160})
+	fmt.Printf("patients  up to 60 years of age: %v\n", infoResult)
+	infoResult = ListOfPacient.FilterDiagnosis(Options{MinAge: 30, MaxAge: 50, Diagnos: "test"})
+	fmt.Printf("patients Diagnos: %v\n", infoResult)
 }

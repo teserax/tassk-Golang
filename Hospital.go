@@ -110,7 +110,7 @@ func main() {
 	fmt.Printf("Number patients under 40 years of age %d \nNumber patients under 40 years of age %d \nNumber patients under 40 years of age %d", fortyYearOlds, fortyToSixty, overSixty)
 
 }
-func searchAge(m map[int]Patient) {
+func numberОfРatientsRequiredAge(m map[int]Patient) {
 	col := 0
 	for _, v := range m {
 		if v.Age <= 40 {

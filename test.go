@@ -72,7 +72,7 @@ func (list List) Filter(option Options) List {
 		for _, pacient := range result {
 			//если возраст меньше минимального, то пациент нам не нужен,
 			if pacient.Age < option.MinAge {
-				continue //TT если по условию не совпадает оставлаем все как есть
+				continue //TT если по условию не совпадает оставляем все как есть
 
 			} else { //TT если  нет то записываем в конец слаиса--"списка"
 				result = append(result, pacient)
@@ -80,7 +80,7 @@ func (list List) Filter(option Options) List {
 		}
 		if len(result) == 0 { //если длина ноль то возвращаем пустои результат
 			return result
-		} else { //если нет то обрезаем все кроме дополненых нами данных знаиа длину списка до добавлениа наших данных
+		} else { //если нет то обрезаем все кроме дополненых нами данных зная длину списка до добавления наших данных
 			result = append(result[count:])
 		}
 	}

@@ -41,102 +41,56 @@ type FullName struct {
 }
 type List []Patient
 type Options struct {
-	MinAge  int
-	MaxAge  int
-	Group   string
-	Diagnos string
+	MinAge    int
+	MaxAge    int
+	BloodType string
+	Diagnosis string
 }
 
-// VG: как должен работать код. Особенности:
-// - между всеми видами фильтра условие AND (то если все должны выполнятся). То есть или все должны выполнится или не один.
-// - фильтр должен быть переиспользован,Filter()->Filter().В таком виде как сейчас Filter(option Options) (List, int) его переиспользвоать нельзя. Скажи почему?//ТТ:каждый раз новый int недаст переиспользовать  filter
 func (list List) Filter(option Options) List {
-	//если список пустой, то сразу вернуть пустой результат
-	if len(list) == 0 {
-		return nil
-	}
-	// предполагаем что все пациенты проходят
-	result := list
-	/*
-		type Options struct {
-			MinAge         int
-			MaxAge         int
-			Group          string
-			Diagnos        string
-			countOfPacient int
-		}
-	*/
-	// проверяем первое условие, если оно указано, то фильтруем листинги по нему,
-	if option.MinAge > 0 {
-		count := len(result)
-		for _, pacient := range result {
-			//если возраст меньше минимального, то пациент нам не нужен,
-			if pacient.Age < option.MinAge {
-				continue //TT если по условию не совпадает оставлаем все как есть
 
-			} else { //TT если  нет то записываем в конец слаиса--"списка"
-				result = append(result, pacient)
-			}
-		}
-		if len(result) == 0 { //если длина ноль то возвращаем пустои результат
-			return result
-		} else { //если нет то обрезаем все кроме дополненых нами данных знаиа длину списка до добавлениа наших данных
-			result = append(result[count:])
+	var result List
+	for _, patient := range list {
+		if (patient.Age >= option.MinAge || option.MinAge == 0) &&
+			(patient.Age <= option.MaxAge || option.MaxAge == 0) &&
+			(patient.BloodType == option.BloodType || option.BloodType == "") &&
+			(patient.Diagnosis == option.Diagnosis || option.Diagnosis == "") {
+
+			result = append(result, patient)
 		}
 	}
-	//ТТ далее тоже саммое приусловии что переданные данные заполнены если нет возвращаем полный список пациентов
-	if option.MaxAge > 0 {
-		count := len(result)
-		for _, pacient := range result {
-
-			if pacient.Age > option.MaxAge {
-				continue
-
-			} else {
-				result = append(result, pacient)
-			}
-		}
-		if len(result) == 0 {
-			return result
-		} else {
-			result = append(result[count:])
-		}
-	}
-	if option.Group != "" {
-		count := len(result)
-		for _, pacient := range result {
-			if pacient.BloodType != option.Group {
-				continue
-
-			} else {
-				result = append(result, pacient)
-			}
-		}
-		if len(result) == 0 {
-			return result
-		} else {
-			result = append(result[count:])
-		}
-	}
-
-	if option.Diagnos != "" {
-		count := len(result)
-		for _, pacient := range result {
-			if pacient.Diagnosis != option.Diagnos {
-				continue
-
-			} else {
-				result = append(result, pacient)
-			}
-		}
-		if len(result) == 0 {
-			return result
-		} else {
-			result = append(result[count:])
-		}
-	}
-
 	return result
+
+}
+func (list List) widespread(option Options) {
+	widesp := map[string]int{}
+	for _, patient := range list {
+		if option.BloodType == "" {
+			if _, exist := widesp[patient.BloodType]; exist {
+				widesp[patient.BloodType]++
+			} else {
+				widesp[patient.BloodType] = 1
+			}
+		}
+		if option.Diagnosis == "" {
+			if _, exist := widesp[patient.Diagnosis]; exist {
+				widesp[patient.Diagnosis]++
+			} else {
+				widesp[patient.Diagnosis] = 1
+			}
+		}
+
+	}
+	max := 0
+	value := ""
+	for i, val := range widesp {
+		if val > max {
+			max = val
+			value = i
+		}
+	}
+	fmt.Printf("amount %d value %s\n", max, value)
+
 }
 
 func main() {
@@ -171,11 +125,11 @@ func main() {
 	//
 	//ListOfPacient = append(ListOfPacient, hospitalQuestionnaire)
 	//
-	ListOfPacient = []Patient{ //условные данне длпроверки
-		{1, 15, "333", "test", FullName{FirstName: "Petrov", LastName: "Serghei", Patronymic: "qww"}},
-		{2, 25, "qq", "est", FullName{FirstName: "Ivanov", LastName: "Andrei", Patronymic: "qggg"}},
-		{3, 45, "ee", "top", FullName{FirstName: "Sidorov", LastName: "Petar", Patronymic: "qhhh"}},
-		{4, 65, "00", "test", FullName{FirstName: "Kozlov", LastName: "Ivan", Patronymic: "qkkk"}},
+	ListOfPacient = []Patient{
+		{1, 15, "AO", "test", FullName{FirstName: "Petrov", LastName: "Serghei", Patronymic: "qww"}},
+		{2, 32, "AA", "test", FullName{FirstName: "Ivanov", LastName: "Andrei", Patronymic: "qggg"}},
+		{3, 56, "AO", "top", FullName{FirstName: "Sidorov", LastName: "Petar", Patronymic: "qhhh"}},
+		{4, 67, "AB", "test", FullName{FirstName: "Kozlov", LastName: "Ivan", Patronymic: "qkkk"}},
 	}
 
 	data, err = json.MarshalIndent(ListOfPacient, " ", "")
@@ -196,6 +150,17 @@ func main() {
 		os.Exit(2)
 	}
 	fmt.Println(string(info))
-	infoResult := ListOfPacient.Filter(Options{})
-	fmt.Printf("found %d patients with this diagnosis \n%v\n", len(infoResult), infoResult)
+	/*infoResult:= ListOfPacient.Filter(Options{MaxAge: 40})
+	fmt.Printf("found  patients up to 40 years of age: %v\n",  infoResult)
+	*/
+	infoResult := ListOfPacient.Filter(Options{MinAge: 11, MaxAge: 60})
+	fmt.Printf("found %d patients from 41 up to 60 years of age: %v\n", len(infoResult), infoResult)
+	/*
+		infoResult= ListOfPacient.Filter(Options{MinAge: 60, MaxAge: 160})
+		fmt.Printf("found patients  up to 60 years of age: %v\n",  infoResult)*/
+	//	infoResult := ListOfPacient.Filter(Options{Diagnosis: "test"}).Filter(Options{BloodType: "00"})
+	//	fmt.Printf("found  patients with this diagnosis \n%v\n", infoResult)
+	ListOfPacient.widespread(Options{BloodType: ""})
+	//ListOfPacient.widespread(Options{Diagnosis: ""})
+
 }

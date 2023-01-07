@@ -48,6 +48,46 @@ type Options struct {
 }
 
 func (list List) Filter(option Options) List {
+<<<<<<< HEAD
+=======
+	//если список пустой, то сразу вернуть пустой результат
+	if len(list) == 0 {
+		return nil
+	}
+	// предполагаем что все пациенты проходят
+	result := list
+	/*
+		type Options struct {
+			MinAge         int
+			MaxAge         int
+			Group          string
+			Diagnos        string
+			countOfPacient int
+		}
+	*/
+	// проверяем первое условие, если оно указано, то фильтруем листинги по нему,
+	if option.MinAge > 0 {
+		count := len(result)
+		for _, pacient := range result {
+			//если возраст меньше минимального, то пациент нам не нужен,
+			if pacient.Age < option.MinAge {
+				continue //TT если по условию не совпадает оставляем все как есть
+
+			} else { //TT если  нет то записываем в конец слаиса--"списка"
+				result = append(result, pacient)
+			}
+		}
+		if len(result) == 0 { //если длина ноль то возвращаем пустои результат
+			return result
+		} else { //если нет то обрезаем все кроме дополненых нами данных зная длину списка до добавления наших данных
+			result = append(result[count:])
+		}
+	}
+	//ТТ далее тоже саммое приусловии что переданные данные заполнены если нет возвращаем полный список пациентов
+	if option.MaxAge > 0 {
+		count := len(result)
+		for _, pacient := range result {
+>>>>>>> 7a4814c8cb8dad1171be72448e34abb5acb92737
 
 	var result List
 	for _, patient := range list {

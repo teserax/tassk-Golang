@@ -1,0 +1,77 @@
+//"buy", "fill", "take"
+
+package main
+
+import "fmt"
+
+type coffeeMachine struct {
+	money int
+	water int
+	milk  int
+	beans int
+	cups  int
+}
+
+func Info(m *coffeeMachine) {
+	fmt.Println("The coffee machine has:")
+	info := fmt.Sprintf(" %d ml of water \n %d ml of milk \n %d g of coffee beans \n %d disposable cups \n $%d of money\n", m.water, m.milk, m.beans, m.cups, m.money)
+	fmt.Print(info)
+}
+
+func main() {
+	machine := coffeeMachine{
+		money: 550,
+		water: 400,
+		milk:  540,
+		beans: 120,
+		cups:  9,
+	}
+	Info(&machine)
+	var answer string
+	fmt.Println("Write action (buy, fill, take):")
+	fmt.Scan(&answer)
+	switch {
+	case answer == "buy":
+		var answerBuy string
+		fmt.Println("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino:")
+		fmt.Scan(&answerBuy)
+		switch {
+		case answerBuy == "1":
+			machine.water = machine.water - 250
+			machine.beans = machine.beans - 16
+			machine.money = machine.money + 4
+			machine.cups--
+		case answerBuy == "2":
+			machine.water -= 350
+			machine.milk -= 75
+			machine.beans -= 20
+			machine.money += 7
+			machine.cups--
+		case answerBuy == "3":
+			machine.water = machine.water - 200
+			machine.milk = machine.milk - 100
+			machine.beans = machine.beans - 12
+			machine.money = machine.money + 6
+			machine.cups--
+		}
+	case answer == "fill":
+		var water, milk, beans, cups int
+		fmt.Println("Write how many ml of water you want to add:")
+		fmt.Scan(&water)
+		machine.water += water
+		fmt.Println("Write how many ml of milk you want to add:")
+		fmt.Scan(&milk)
+		machine.milk += milk
+		fmt.Println("Write how many grams of coffee beans you want to add:")
+		fmt.Scan(&beans)
+		machine.beans += beans
+		fmt.Println("Write how many disposable cups you want to add:")
+		fmt.Scan(&cups)
+		machine.cups += cups
+
+	case answer == "take":
+		fmt.Printf("I gave you $%d", machine.money)
+		machine.money = 0
+	}
+	Info(&machine)
+}
